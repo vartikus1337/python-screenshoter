@@ -7,7 +7,14 @@ from time import sleep
 
 now = datetime.now()
 today = str(date.today())
-minutes = 1
+disk = yadisk.YaDisk(token=TOKEN)
+minutes_for_screen_shot = 1
+minutes_for_upload_images = 3
+
+
+def get_images():
+    for object in list(disk.listdir(f"/{today}/")):
+        yield object["name"]
 
 
 def update_time():
@@ -32,23 +39,21 @@ def create_screen():
 def test_screenshots():
     count = 0
     create_folder()
-    while count < 3:
+    while count < 5:
         create_folder()
-        sleep(10)
+        sleep(2)
+        if now.second >= now.hour * now.minute + minutes_for_upload_images:
+            upload_on_disk()
         create_screen()
         count += 1
 
 
-def test_yadisk():
-    y = yadisk.YaDisk(token=TOKEN)
-    print(y.check_token())
-
-    y.mkdir(f"/{today}")
-
-
-def test_write_files_for_upload():
-    content = os.listdir(f'{today}/')
-    print(content)
+def upload_on_disk():
+    if not disk.exists(f"/{today}"):
+        disk.mkdir(f"/{today}")
+    for img in os.listdir(f'{today}/'):
+        if img not in get_images():
+            disk.upload(f"{today}/" + img, f"{today}/" + img)
 
 
 if __name__ == "__main__":
