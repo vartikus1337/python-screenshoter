@@ -1,9 +1,10 @@
-from Token import TOKEN
 import yadisk
 import pyautogui
 import os
+from Token import TOKEN
 from datetime import date, datetime
 from time import sleep
+
 
 now = datetime.now()
 today = str(date.today())
@@ -33,18 +34,19 @@ def create_folder():
 def create_screen():
     update_time()
     screen = pyautogui.screenshot()
-    screen.save(f'{today}/{now.hour}-{now.minute}-{now.second}.png')
+    screen.save(f'{today}/{now.hour}-{now.minute}.png')
 
 
-def test_screenshots():
+def main():
     count = 0
     create_folder()
-    while count < 5:
+    while True:
         create_folder()
-        sleep(2)
-        if now.second >= now.hour * now.minute + minutes_for_upload_images:
-            upload_on_disk()
+        sleep(minutes_for_screen_shot * 60)
         create_screen()
+        if count == minutes_for_upload_images:
+            upload_on_disk()
+            count = 0
         count += 1
 
 
@@ -57,4 +59,4 @@ def upload_on_disk():
 
 
 if __name__ == "__main__":
-    test_screenshots()
+    main()
