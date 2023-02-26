@@ -11,11 +11,7 @@ today = str(date.today())
 disk = yadisk.YaDisk(token=TOKEN)
 minutes_for_screen_shot = 1
 minutes_for_upload_images = 3
-
-
-def get_images():
-    for object in list(disk.listdir(f"/{today}/")):
-        yield object["name"]
+images_for_upload = list()
 
 
 def update_time():
@@ -38,6 +34,7 @@ def create_screen():
     screen = pyautogui.screenshot()
     screen.save(f'{today}/{now.hour}-{now.minute}.png')
     print("Create screen")
+    images_for_upload.append(f'{today}/{now.hour}-{now.minute}.png')
 
 
 def upload_on_disk():
@@ -45,8 +42,9 @@ def upload_on_disk():
         disk.mkdir(f"/{today}")
         print("Created folder in yadisk")
     for img in os.listdir(f'{today}/'):
-        if img not in get_images():
+        if img in images_for_upload:
             disk.upload(f"{today}/" + img, f"{today}/" + img)
+            images_for_upload.remove(img)
             print(f"upload {img}")
 
 
